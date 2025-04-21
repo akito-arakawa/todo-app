@@ -7,3 +7,5 @@ databaseChangeLog:
       file: db/changeLog/V1.2__insert_sample_users.yaml
   - include:
       file: db/changeLog/V1.3__insert_sample_tasks.yaml
+  - include:
+      file: db/changeLog/V1.4__set_default_for_updated_at.yaml
