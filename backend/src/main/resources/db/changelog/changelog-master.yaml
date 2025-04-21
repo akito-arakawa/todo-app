@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changeLog/V1__users_create_table.yaml
+  - include:
+      file: db/changeLog/V1.1__tasks_create_table.yaml
+  - include:
+      file: db/changeLog/V1.2__insert_sample_users.yaml
+  - include:
+      file: db/changeLog/V1.3__insert_sample_tasks.yaml
