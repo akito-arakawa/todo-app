@@ -30,4 +30,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
             Timestamp start,
             Timestamp end
     );
+
+    //完了のみ削除
+    void deleteByStatus(Status status);
 }

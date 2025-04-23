@@ -16,6 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Task {
     @Id
+    @GeneratedValue
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
