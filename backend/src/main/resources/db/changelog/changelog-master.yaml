@@ -9,3 +9,5 @@ databaseChangeLog:
       file: db/changeLog/V1.3__insert_sample_tasks.yaml
   - include:
       file: db/changeLog/V1.4__set_default_for_updated_at.yaml
+  - include:
+      file: db/changeLog/V1.5__insert_sample_tasks.yaml
