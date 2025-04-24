@@ -87,6 +87,7 @@ public class TaskService {
             task.setTitle(request.getTitle());
             task.setDescription(request.getDescription());
             task.setStatus(request.getStatus());
+            task.setDueDate(request.getDueDate());
             return taskRepository.save(task);
         } else {
             throw new RuntimeException("ユーザーが見つかりません");
@@ -117,6 +118,7 @@ public class TaskService {
             task.setTitle(request.getTitle());
             task.setDescription(request.getDescription());
             task.setStatus(request.getStatus());
+            task.setDueDate(request.getDueDate());
             return taskRepository.save(task);
         } else {
             throw new RuntimeException("タスクが見つかりません");
