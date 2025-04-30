@@ -43,6 +43,12 @@ public class Task {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = Timestamp.from(Instant.now());
+        updatedAt = Timestamp.from(Instant.now());
+    }
+
     @PreUpdate
     protected void onUpdate() {
         updatedAt = Timestamp.from(Instant.now());
