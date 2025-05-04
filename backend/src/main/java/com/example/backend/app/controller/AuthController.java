@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -64,11 +63,16 @@ public class AuthController {
 
     @PostMapping("/add")
     public ResponseEntity<?> RegistrationUser(@RequestBody LoginRequest request) {
-       try {
-           User user = userService.addUser(request);
-           return ResponseEntity.ok(user);
-       } catch (RuntimeException e) {
-           return ResponseEntity.status(404).body(e.getMessage()); //エラー内容表示
-       }
+        if (userService.existsByLoginId(request.getLoginId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("既に存在するユーザー名です");
+        }
+        try {
+            User user = userService.addUser(request);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("登録中にエラーが発生しました"); //エラー内容表示
+        }
     }
 }

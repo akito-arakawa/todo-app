@@ -18,6 +18,7 @@ public class UserService {
 
     @Transactional
     public User addUser(LoginRequest request) {
+        System.out.println(request);
         try {
             //userインスタンス作成・値をセット
             User user = new User();
@@ -28,5 +29,9 @@ public class UserService {
         } catch (Exception e) {
             throw new RuntimeException("ユーザー登録に失敗しました", e);
         }
+    }
+
+    public boolean existsByLoginId(String loginId) {
+        return userRepository.existsByLoginId(loginId);
     }
 }
