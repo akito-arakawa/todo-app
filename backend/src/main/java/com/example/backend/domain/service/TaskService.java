@@ -76,9 +76,9 @@ public class TaskService {
 
     //検証用(仮実装)追加処理
     @Transactional
-    public Task addTask(TaskRequest request) {
-        UUID userId = UUID.fromString("4246d3a7-879b-4d55-9dc7-24b6a3d60f88");
-        Optional<User> user = userRepository.findById(userId);
+    public Task addTask(TaskRequest request, String loginId) {
+        System.out.println("test");
+        Optional<User> user = userRepository.findByLoginId(loginId);
         //userが存在する場合
         if (user.isPresent()) {
             //インスタンス生成
@@ -86,7 +86,7 @@ public class TaskService {
             task.setUser(user.get());
             task.setTitle(request.getTitle());
             task.setDescription(request.getDescription());
-            task.setStatus(request.getStatus());
+            task.setStatus(Status.InComplete);
             task.setDueDate(request.getDueDate());
             return taskRepository.save(task);
         } else {

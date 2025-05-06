@@ -60,10 +60,10 @@ export default function login() {
         }
         return;
       } else {
-        // const result = await response.json();
-        // const token = result.token; // トークンを取得
-        // localStorage.setItem("token", token); // トークンをローカルストレージに保存
-        // console.log("トークン", token);
+        const result = await response.json();
+        const token = result.token; // トークンを取得
+        localStorage.setItem("token", token); // トークンをローカルストレージに保存
+        console.log("トークン", token);
       }
       // ログイン成功時の処理
       router.push("/todo"); // ログイン成功後に遷移するページ

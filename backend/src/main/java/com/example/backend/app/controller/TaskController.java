@@ -6,6 +6,8 @@ import com.example.backend.domain.model.Task;
 import com.example.backend.domain.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -83,10 +85,10 @@ public class TaskController {
 
     //検証save
     @PostMapping
-    public ResponseEntity<?> saveTasks(@RequestBody TaskRequest request) {
-        System.out.println(request);
+    public ResponseEntity<?> saveTasks(@RequestBody TaskRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            Task savedTask = taskService.addTask(request);
+            String loginId = userDetails.getUsername();
+            Task savedTask = taskService.addTask(request, loginId);
             return ResponseEntity.ok(savedTask);
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(e.getMessage()); //エラー内容表示

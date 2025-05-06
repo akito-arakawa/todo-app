@@ -1,5 +1,6 @@
 package com.example.backend.security;
 
+import com.example.backend.domain.service.CustomUserDetailsService;
 import com.example.backend.domain.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,7 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     JwtService jwtService;
 
     @Autowired
-    UserDetailsService userDetailsService;
+    CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -46,18 +47,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String loginId = jwtService.extractUsername(jwt);
         // ユーザー名が存在し、まだ認証されていない場合
         if (loginId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(loginId);
+            //loginIdを基にuserDetailsオブジェクトを作成
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginId);
             //有効期限をチェック
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities()
                         );
-
+                //認証済みユーザをセット
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-
+        //次のフィルター・コントローラに情報を渡す
         filterChain.doFilter(request, response);
     }
 }
