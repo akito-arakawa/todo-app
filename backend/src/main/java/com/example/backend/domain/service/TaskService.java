@@ -24,21 +24,6 @@ public class TaskService {
     @Autowired
     UserRepository userRepository;
 
-    public void printAllTasks() {
-        UUID userId = UUID.fromString("4246d3a7-879b-4d55-9dc7-24b6a3d60f88");
-        UUID id = UUID.fromString("60eb1cf4-a990-4aa3-8569-558661547d39");
-        Timestamp now = Timestamp.from(Instant.now());
-        Timestamp sevenDaysLater = Timestamp.from(Instant.now().plusSeconds(7 * 24 * 60 * 60));
-        List<Task> tasks = taskRepository.findByUser_IdAndDueDateIsNotNullAndDueDateBetweenOrderByDueDate(
-                userId,
-                now,
-                sevenDaysLater
-        );
-        for (Task task : tasks) {
-            System.out.println(task);
-        }
-    }
-
     //taskをすべて取得
     public List<Task> findAllByTask(String loginId) {
         Optional<User> user = userRepository.findByLoginId(loginId);
@@ -98,7 +83,7 @@ public class TaskService {
         }
     }
 
-    //検証用(仮実装)追加処理
+    //追加処理
     @Transactional
     public Task addTask(TaskRequest request, String loginId) {
         System.out.println("test");
@@ -131,7 +116,7 @@ public class TaskService {
         taskRepository.deleteByStatus(status);
     }
 
-    //編集処理(仮実装)
+    //編集処理
     @Transactional
     public Task updateTask(String loginId, UUID taskId, TaskRequest request) {
         System.out.println("test");
@@ -152,7 +137,7 @@ public class TaskService {
                 throw new RuntimeException("タスクが見つかりません");
             }
         } else {
-            throw  new RuntimeException("userが見つかりません");
+            throw new RuntimeException("userが見つかりません");
         }
 
     }

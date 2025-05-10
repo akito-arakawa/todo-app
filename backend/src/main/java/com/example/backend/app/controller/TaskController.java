@@ -21,9 +21,6 @@ public class TaskController {
     @Autowired
     TaskService taskService;
 
-    //仮のID
-    UUID userId = UUID.fromString("4246d3a7-879b-4d55-9dc7-24b6a3d60f88");
-
     @GetMapping
     public ResponseEntity<?> findAllBYTask(@AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -34,17 +31,7 @@ public class TaskController {
             return ResponseEntity.status(404).body(e.getMessage()); //エラー内容表示
         }
     }
-
-    @GetMapping("/{taskId}")
-    public ResponseEntity<?> findByTask(@PathVariable UUID taskId) {
-        try {
-            Optional<Task> task = taskService.findByTask(userId, taskId);
-            return ResponseEntity.ok(task);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage()); //エラー内容表示
-        }
-    }
-
+    //完了表示
     @GetMapping("/complete")
     public ResponseEntity<?> findByCompleteTask(@AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -55,7 +42,7 @@ public class TaskController {
             return ResponseEntity.status(404).body(e.getMessage());
         }
     }
-
+    //未完了表示
     @GetMapping("/inComplete")
     public ResponseEntity<?> findByInCompleteTask(@AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -66,7 +53,7 @@ public class TaskController {
             return ResponseEntity.status(404).body(e.getMessage());
         }
     }
-
+    //期限切れ表示
     @GetMapping("/expired")
     public ResponseEntity<?> findByExpiredTask(@AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -77,7 +64,7 @@ public class TaskController {
             return ResponseEntity.status(404).body(e.getMessage());
         }
     }
-
+    //近日締め切り表示
     @GetMapping("/dueSoon")
     public ResponseEntity<?> findByDueSoonTask(@AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -89,7 +76,7 @@ public class TaskController {
         }
     }
 
-    //検証save
+    //追加処理
     @PostMapping
     public ResponseEntity<?> saveTasks(@RequestBody TaskRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -101,21 +88,21 @@ public class TaskController {
         }
     }
 
-    //検証用delete
+    //削除処理
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable String id) {
         taskService.deleteByTask(id);
         return ResponseEntity.noContent().build();
     }
 
-    //検証用delete
+    //完了をすべて削除
     @DeleteMapping("/complete")
     public ResponseEntity<Void> deleteCompleteByTask() {
         taskService.deleteAllCompletedTasks(Status.Complete);
         return ResponseEntity.noContent().build();
     }
 
-    //検証用Update
+    //編集処理
     @PutMapping("/update/{taskId}")
     public ResponseEntity<?> updateTask(@AuthenticationPrincipal UserDetails userDetails,
                                         @PathVariable UUID taskId,

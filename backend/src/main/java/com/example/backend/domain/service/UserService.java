@@ -30,7 +30,7 @@ public class UserService {
             throw new RuntimeException("ユーザー登録に失敗しました", e);
         }
     }
-
+    //loginIdチェック処理
     public boolean existsByLoginId(String loginId) {
         return userRepository.existsByLoginId(loginId);
     }

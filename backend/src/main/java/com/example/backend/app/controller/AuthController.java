@@ -29,16 +29,6 @@ public class AuthController {
     @Autowired
     JwtService jwtService;
 
-    @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
-        System.out.println(authentication);
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return ResponseEntity.ok(Map.of(
-                "loginId", userDetails.getUsername()
-                // 必要なら他の情報も返す
-        ));
-    }
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
