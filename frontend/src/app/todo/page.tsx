@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,12 +8,53 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Plus from "@/components/icon/plus";
 import Logout from "@/components/icon/logout";
 import { useState } from "react";
-import { TaskRequest } from "@/types";
+import { TaskRequest, Task, FilterTab } from "@/types";
+import TaskItem from "@/components/todo/task-item";
+import { resolve } from "path";
 
 export default function page() {
+  //タスク追加ステート
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [showDueDate, setShowDueDate] = useState(false);
+  //タスク表示ステート
+  const [tasks, setTasks] = useState<Task[]>([]);
+  //Tabsステート
+  const [filter, setFilter] = useState<FilterTab>("all");
+  //タスク編集ステート
+  const [isEditing, setIsEditing] = useState(false);
+
+  //初期の描画のためのデータを取得する
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("トークンがありません");
+      return;
+    }
+    const fetchTask = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/tasks", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response) {
+          throw new Error("タスク取得に失敗しました。");
+        }
+
+        const data = await response.json();
+        setTasks(data);
+        console.log(data);
+      } catch {
+        throw new Error("表示に失敗しました。");
+      }
+    };
+
+    fetchTask();
+  }, []);
 
   //タスク追加処理
   const createTask = async (e: React.FormEvent) => {
@@ -27,33 +68,260 @@ export default function page() {
     }
 
     try {
-      const taskRequest: TaskRequest = {
-        title,
-        dueDate: dueDate || null,
-      };
-      const response = await fetch("http://localhost:8080/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(taskRequest),
-      });
+      if (title.length > 0) {
+        const taskRequest: TaskRequest = {
+          title,
+          dueDate: dueDate || null,
+        };
 
-      if (!response.ok) {
-        throw new Error("タスク追加に失敗しました");
+        const response = await fetch("http://localhost:8080/api/tasks", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(taskRequest),
+        });
+
+        if (!response.ok) {
+          throw new Error("タスク追加に失敗しました");
+        }
+        const data = await response.json();
+        console.log("追加されたタスク:", data);
+
+        setTasks((prevTasks) => [...prevTasks, data]);
+
+        setTitle("");
+        setDueDate("");
+        setShowDueDate(false);
+      } else {
+        console.log("タスクが空です");
+        return;
       }
-      const data = await response.json();
-      console.log("追加されたタスク:", data);
-
-      setTitle("");
-      setDueDate("");
-      setShowDueDate(false);
     } catch (error) {
       console.error("エラー:", error);
     }
 
     return;
+  };
+
+  //タスクすべて表示
+  const allTask = async (e: React.FormEvent) => {
+    //画面の更新を防ぐ
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    console.log(token);
+    if (!token) {
+      alert("トークンがありません");
+      return;
+    }
+    try {
+      const response = await fetch("http://localhost:8080/api/tasks", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response) {
+        throw new Error("タスク取得に失敗しました。");
+      }
+
+      const data = await response.json();
+      setTasks(data);
+      console.log(data);
+    } catch {
+      throw new Error("表示に失敗しました。");
+    }
+  };
+  //未完了タスク
+  const activeTask = async (e: React.FormEvent) => {
+    //画面の更新を防ぐ
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    console.log(token);
+    if (!token) {
+      alert("トークンがありません");
+      return;
+    }
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/tasks/inComplete",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response) {
+        throw new Error("タスク取得に失敗しました。");
+      }
+
+      const data = await response.json();
+      setTasks(data);
+      console.log(data);
+    } catch {
+      throw new Error("表示に失敗しました。");
+    }
+  };
+
+  //完了タスク
+  const completeTask = async (e: React.FormEvent) => {
+    //画面の更新を防ぐ
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    console.log(token);
+    if (!token) {
+      alert("トークンがありません");
+      return;
+    }
+    try {
+      const response = await fetch("http://localhost:8080/api/tasks/complete", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response) {
+        throw new Error("タスク取得に失敗しました。");
+      }
+
+      const data = await response.json();
+      setTasks(data);
+      console.log(data);
+    } catch {
+      throw new Error("表示に失敗しました。");
+    }
+  };
+
+  //期限切れタスク
+  const overdueTask = async (e: React.FormEvent) => {
+    //画面の更新を防ぐ
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    console.log(token);
+    if (!token) {
+      alert("トークンがありません");
+      return;
+    }
+    try {
+      const response = await fetch("http://localhost:8080/api/tasks/expired", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response) {
+        throw new Error("タスク取得に失敗しました。");
+      }
+
+      const data = await response.json();
+      setTasks(data);
+      console.log(data);
+    } catch {
+      throw new Error("表示に失敗しました。");
+    }
+  };
+
+  //近日締め切りタスク
+  const upcomingTask = async (e: React.FormEvent) => {
+    //画面の更新を防ぐ
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    console.log(token);
+    if (!token) {
+      alert("トークンがありません");
+      return;
+    }
+    try {
+      const response = await fetch("http://localhost:8080/api/tasks/dueSoon", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response) {
+        throw new Error("タスク取得に失敗しました。");
+      }
+
+      const data = await response.json();
+      setTasks(data);
+      console.log(data);
+    } catch {
+      throw new Error("表示に失敗しました。");
+    }
+  };
+
+  //削除機能
+  const handleDelete = async (taskId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log(token);
+      if (!token) {
+        alert("トークンがありません");
+        return;
+      }
+      const response = await fetch(
+        `http://localhost:8080/api/tasks/${taskId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response) {
+        throw new Error("削除に失敗しました。");
+      }
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+    } catch (error) {
+      console.error("削除に失敗しました", error);
+    }
+  };
+
+  //タスク編集処理
+  const handleUpdate = async (updateTask: Task) => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log(token);
+      if (!token) {
+        alert("トークンがありません");
+        return;
+      }
+      const response = await fetch(
+        `http://localhost:8080/api/tasks/update/${updateTask.id}`,
+        {
+          method: "Put",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title: updateTask.title,
+            status: updateTask.status,
+            dueDate: updateTask.dueDate,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("更新に失敗しました");
+      }
+      //更新したデータを取得
+      const data = await response.json();
+      setTasks((prev) =>
+        prev.map((t) => (t.id === updateTask.id ? data : t))
+      )
+    } catch (error) {
+      console.error(error);
+      alert("タスクの更新に失敗しました");
+    }
   };
 
   return (
@@ -118,46 +386,75 @@ export default function page() {
               </CardContent>
             </Card>
             <div className="w-full max-w-3xl space-y-6">
-              <Tabs defaultValue="all" className="w-full">
+              <Tabs
+                className="w-full"
+                value={filter}
+                onValueChange={(value) => setFilter(value as FilterTab)}
+              >
                 <TabsList className="flex space-x-2 bg-gray-100 rounded-lg p-2">
                   <TabsTrigger
                     value="all"
-                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black"
+                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black mr-0 cursor-pointer"
+                    onClick={allTask}
                   >
                     すべて
                   </TabsTrigger>
                   <TabsTrigger
                     value="active"
-                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black"
+                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black mr-0 cursor-pointer"
+                    onClick={activeTask}
                   >
                     未完了
                   </TabsTrigger>
                   <TabsTrigger
                     value="completed"
-                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black"
+                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black  mr-0 cursor-pointer"
+                    onClick={completeTask}
                   >
                     完了
                   </TabsTrigger>
                   <TabsTrigger
                     value="overdue"
-                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black"
+                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black mr-0 cursor-pointer"
+                    onClick={overdueTask}
                   >
                     期限切れ
                   </TabsTrigger>
                   <TabsTrigger
                     value="upcoming"
-                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black"
+                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black  mr-0 cursor-pointer"
+                    onClick={upcomingTask}
                   >
                     近日締め切り
                   </TabsTrigger>
                 </TabsList>
                 {/* タブごとの中身（例） */}
                 <div className="mt-4">
-                  <TabsContent value="all">全タスク一覧</TabsContent>
-                  <TabsContent value="active">未完了のタスク</TabsContent>
-                  <TabsContent value="completed">完了したタスク</TabsContent>
-                  <TabsContent value="overdue">期限切れのタスク</TabsContent>
-                  <TabsContent value="upcoming">近日締め切りタスク</TabsContent>
+                  <TabsContent value={filter}>
+                    {tasks.length > 0 ? (
+                      tasks.map((task: Task) => (
+                        <TaskItem
+                          key={task.id}
+                          task={task}
+                          onDelete={handleDelete}
+                          onUpdate={handleUpdate}
+                        />
+                      ))
+                    ) : filter === "all" ? (
+                      <p>タスクがありません</p>
+                    ) : (
+                      <p>
+                        {filter === "completed"
+                          ? "完了した"
+                          : filter === "active"
+                          ? "未完了の"
+                          : filter === "overdue"
+                          ? "期限切れの"
+                          : "近日締め切りの"}
+                        タスクがありません
+                      </p>
+                    )}
+                  </TabsContent>
                 </div>
               </Tabs>
             </div>

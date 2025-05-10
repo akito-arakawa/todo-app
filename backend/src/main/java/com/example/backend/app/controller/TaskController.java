@@ -3,6 +3,7 @@ package com.example.backend.app.controller;
 import com.example.backend.domain.dto.TaskRequest;
 import com.example.backend.domain.model.Status;
 import com.example.backend.domain.model.Task;
+import com.example.backend.domain.model.User;
 import com.example.backend.domain.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +25,11 @@ public class TaskController {
     UUID userId = UUID.fromString("4246d3a7-879b-4d55-9dc7-24b6a3d60f88");
 
     @GetMapping
-    public ResponseEntity<?> findAllBYTask() {
+    public ResponseEntity<?> findAllBYTask(@AuthenticationPrincipal UserDetails userDetails) {
         try {
-            List<Task> tasks = taskService.findAllBYTask(userId);
-            return ResponseEntity.ok(tasks);
+            String loginId = userDetails.getUsername();
+            List<Task> tasks = taskService.findAllByTask(loginId);
+                return ResponseEntity.ok(tasks);
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(e.getMessage()); //エラー内容表示
         }
@@ -44,9 +46,10 @@ public class TaskController {
     }
 
     @GetMapping("/complete")
-    public ResponseEntity<?> findByCompleteTask() {
+    public ResponseEntity<?> findByCompleteTask(@AuthenticationPrincipal UserDetails userDetails) {
         try {
-            List<Task> tasks = taskService.findByStatusTask(Status.Complete, userId);
+            String loginId = userDetails.getUsername();
+            List<Task> tasks = taskService.findByStatusTask(Status.Complete, loginId);
             return ResponseEntity.ok(tasks);
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(e.getMessage());
@@ -54,9 +57,10 @@ public class TaskController {
     }
 
     @GetMapping("/inComplete")
-    public ResponseEntity<?> findByInCompleteTask() {
+    public ResponseEntity<?> findByInCompleteTask(@AuthenticationPrincipal UserDetails userDetails) {
         try {
-            List<Task> tasks = taskService.findByStatusTask(Status.InComplete, userId);
+            String loginId = userDetails.getUsername();
+            List<Task> tasks = taskService.findByStatusTask(Status.InComplete, loginId);
             return ResponseEntity.ok(tasks);
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(e.getMessage());
@@ -64,9 +68,10 @@ public class TaskController {
     }
 
     @GetMapping("/expired")
-    public ResponseEntity<?> findByExpiredTask() {
+    public ResponseEntity<?> findByExpiredTask(@AuthenticationPrincipal UserDetails userDetails) {
         try {
-            List<Task> tasks = taskService.findByDueDateBeforeTask(userId);
+            String loginId = userDetails.getUsername();
+            List<Task> tasks = taskService.findByDueDateBeforeTask(loginId);
             return ResponseEntity.ok(tasks);
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(e.getMessage());
@@ -74,9 +79,10 @@ public class TaskController {
     }
 
     @GetMapping("/dueSoon")
-    public ResponseEntity<?> findByDueSoonTask() {
+    public ResponseEntity<?> findByDueSoonTask(@AuthenticationPrincipal UserDetails userDetails) {
         try {
-            List<Task> tasks = taskService.findTasksDueSoon(userId);
+            String loginId = userDetails.getUsername();
+            List<Task> tasks = taskService.findTasksDueSoon(loginId);
             return ResponseEntity.ok(tasks);
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(e.getMessage());
@@ -97,7 +103,7 @@ public class TaskController {
 
     //検証用delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable String id) {
         taskService.deleteByTask(id);
         return ResponseEntity.noContent().build();
     }
@@ -111,11 +117,12 @@ public class TaskController {
 
     //検証用Update
     @PutMapping("/update/{taskId}")
-    public ResponseEntity<?> updateTask(@PathVariable UUID userId,
+    public ResponseEntity<?> updateTask(@AuthenticationPrincipal UserDetails userDetails,
                                         @PathVariable UUID taskId,
                                         @RequestBody TaskRequest request) {
         try {
-            Task exitingTask = taskService.updateTask(userId, taskId, request);
+            String loginId = userDetails.getUsername();
+            Task exitingTask = taskService.updateTask(loginId, taskId, request);
             return ResponseEntity.ok(exitingTask);
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(e.getMessage());
