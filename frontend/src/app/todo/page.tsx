@@ -106,9 +106,9 @@ export default function page() {
   };
 
   //タスクすべて表示
-  const allTask = async (e: React.FormEvent) => {
+  const allTask = async (e?: React.FormEvent) => {
     //画面の更新を防ぐ
-    e.preventDefault();
+    e?.preventDefault();
     const token = localStorage.getItem("token");
     console.log(token);
     if (!token) {
@@ -135,9 +135,9 @@ export default function page() {
     }
   };
   //未完了タスク
-  const activeTask = async (e: React.FormEvent) => {
+  const activeTask = async (e?: React.FormEvent) => {
     //画面の更新を防ぐ
-    e.preventDefault();
+    e?.preventDefault();
     const token = localStorage.getItem("token");
     console.log(token);
     if (!token) {
@@ -168,9 +168,9 @@ export default function page() {
   };
 
   //完了タスク
-  const completeTask = async (e: React.FormEvent) => {
+  const completeTask = async (e?: React.FormEvent) => {
     //画面の更新を防ぐ
-    e.preventDefault();
+    e?.preventDefault();
     const token = localStorage.getItem("token");
     console.log(token);
     if (!token) {
@@ -198,9 +198,9 @@ export default function page() {
   };
 
   //期限切れタスク
-  const overdueTask = async (e: React.FormEvent) => {
+  const overdueTask = async (e?: React.FormEvent) => {
     //画面の更新を防ぐ
-    e.preventDefault();
+    e?.preventDefault();
     const token = localStorage.getItem("token");
     console.log(token);
     if (!token) {
@@ -228,9 +228,9 @@ export default function page() {
   };
 
   //近日締め切りタスク
-  const upcomingTask = async (e: React.FormEvent) => {
+  const upcomingTask = async (e?: React.FormEvent) => {
     //画面の更新を防ぐ
-    e.preventDefault();
+    e?.preventDefault();
     const token = localStorage.getItem("token");
     console.log(token);
     if (!token) {
@@ -312,6 +312,23 @@ export default function page() {
 
       if (!response.ok) {
         throw new Error("更新に失敗しました");
+      }
+      switch (filter) {
+        case "active":
+          await activeTask();
+          break;
+        case "completed":
+          await completeTask();
+          break;
+        case "overdue":
+          await overdueTask();
+          break;
+        case "upcoming":
+          await upcomingTask();
+          break;
+        default:
+          await allTask();
+          break;
       }
       //更新したデータを取得
       const data = await response.json();

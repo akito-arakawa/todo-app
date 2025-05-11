@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from "react";
 import { Task } from "../../types/index";
@@ -7,9 +7,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import Pencil from "@/components/icon/pencil";
 import Trash from "../icon/trash";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { on } from "events";
 
 interface TodoItemProps {
   task: Task;
@@ -23,24 +22,31 @@ export default function taskItem({ task, onDelete, onUpdate }: TodoItemProps) {
   //タスクTitleステート
   const [editTitle, setEditTitle] = useState(task.title);
   //タスクdueDateステート
-  const [editDueDate, setDueDate] = useState(task.dueDate || "");
-
+  const [editDueDate, setEditDueDate] = useState(task.dueDate ? task.dueDate.slice(0, 10) : "");
+console.log("初期値:", editDueDate);
   //編集キャンセル処理
   const handleCancelTask = () => {
     setEditTitle(task.title);
-    setDueDate(task.dueDate || "");
+    setEditDueDate(task.dueDate ? task.dueDate.slice(0, 10) : "");
     setIsEditing(false);
   };
-  //タスク編集
+  //タスク編集  
   const handleUpdateTask = () => {
     if (editTitle.trim()) {
       onUpdate({
         ...task,
         title: editTitle.trim(),
-        dueDate: editDueDate || null,
+        dueDate: editDueDate ? new Date(editDueDate).toISOString() : null,
       });
       setIsEditing(false);
     }
+  };
+
+  const handleCheckedComplete = (checked: boolean) => {
+    onUpdate({
+      ...task,
+      status: checked ? "Complete" : "InComplete",
+    });
   };
 
   return (
@@ -58,7 +64,7 @@ export default function taskItem({ task, onDelete, onUpdate }: TodoItemProps) {
             <Input
               type="date"
               value={editDueDate}
-              onChange={(e) => setDueDate(e.target.value)}
+              onChange={(e) => setEditDueDate(e.target.value)}
               className="w-full"
             />
             <div className="flex justify-end space-x-2">
@@ -71,7 +77,11 @@ export default function taskItem({ task, onDelete, onUpdate }: TodoItemProps) {
         ) : (
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <Checkbox />
+              <Checkbox
+                checked={task.status === "Complete"}
+                onCheckedChange={handleCheckedComplete}
+                className="transition-all duration-200"
+              />
               <div className="ml-2">
                 <p className="flex items-center mb-0 ">{task.title}</p>
               </div>
