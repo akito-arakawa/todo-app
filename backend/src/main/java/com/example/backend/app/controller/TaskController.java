@@ -97,8 +97,10 @@ public class TaskController {
 
     //完了をすべて削除
     @DeleteMapping("/complete")
-    public ResponseEntity<Void> deleteCompleteByTask() {
-        taskService.deleteAllCompletedTasks(Status.Complete);
+    public ResponseEntity<Void> deleteCompleteByTask(@AuthenticationPrincipal UserDetails userDetails) {
+        System.out.println("test");
+        String loginId = userDetails.getUsername();
+        taskService.deleteAllCompletedTasks(Status.Complete,loginId);
         return ResponseEntity.noContent().build();
     }
 

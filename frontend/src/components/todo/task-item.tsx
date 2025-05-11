@@ -22,15 +22,17 @@ export default function taskItem({ task, onDelete, onUpdate }: TodoItemProps) {
   //タスクTitleステート
   const [editTitle, setEditTitle] = useState(task.title);
   //タスクdueDateステート
-  const [editDueDate, setEditDueDate] = useState(task.dueDate ? task.dueDate.slice(0, 10) : "");
-console.log("初期値:", editDueDate);
+  const [editDueDate, setEditDueDate] = useState(
+    task.dueDate ? task.dueDate.slice(0, 10) : ""
+  );
+
   //編集キャンセル処理
   const handleCancelTask = () => {
     setEditTitle(task.title);
     setEditDueDate(task.dueDate ? task.dueDate.slice(0, 10) : "");
     setIsEditing(false);
   };
-  //タスク編集  
+  //タスク編集
   const handleUpdateTask = () => {
     if (editTitle.trim()) {
       onUpdate({

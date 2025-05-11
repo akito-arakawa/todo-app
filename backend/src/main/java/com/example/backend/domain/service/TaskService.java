@@ -112,8 +112,13 @@ public class TaskService {
 
     //完了のみを削除
     @Transactional
-    public void deleteAllCompletedTasks(Status status) {
-        taskRepository.deleteByStatus(status);
+    public void deleteAllCompletedTasks(Status status, String loginId) {
+        Optional<User> user = userRepository.findByLoginId(loginId);
+        if(user.isPresent()) {
+            UUID userId = user.get().getId();
+            taskRepository.deleteByUserIdAndStatus(userId,status);
+        }
+
     }
 
     //編集処理

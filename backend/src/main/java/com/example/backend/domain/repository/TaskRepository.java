@@ -32,5 +32,5 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     );
 
     //完了のみ削除
-    void deleteByStatus(Status status);
+    void deleteByUserIdAndStatus(UUID userId,Status status);
 }

@@ -11,6 +11,7 @@ import { useState } from "react";
 import { TaskRequest, Task, FilterTab } from "@/types";
 import TaskItem from "@/components/todo/task-item";
 import { resolve } from "path";
+import { headers } from "next/headers";
 
 export default function page() {
   //タスク追加ステート
@@ -22,7 +23,7 @@ export default function page() {
   //Tabsステート
   const [filter, setFilter] = useState<FilterTab>("all");
   //タスク編集ステート
-  const [isEditing, setIsEditing] = useState(false);
+  const [complete, setComplete] = useState(false);
 
   //初期の描画のためのデータを取得する
   useEffect(() => {
@@ -332,14 +333,59 @@ export default function page() {
       }
       //更新したデータを取得
       const data = await response.json();
-      setTasks((prev) =>
-        prev.map((t) => (t.id === updateTask.id ? data : t))
-      )
+      setTasks((prev) => prev.map((t) => (t.id === updateTask.id ? data : t)));
     } catch (error) {
       console.error(error);
       alert("タスクの更新に失敗しました");
     }
   };
+
+  //完了をすべて削除
+  const handleDeleteCompleted = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log(token);
+      if (!token) {
+        alert("トークンがありません");
+        return;
+      }
+      const response = await fetch("http://localhost:8080/api/tasks/complete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response) {
+        throw new Error("削除に失敗しました");
+      }
+      switch (filter) {
+        case "active":
+          await activeTask();
+          break;
+        case "completed":
+          await completeTask();
+          break;
+        case "overdue":
+          await overdueTask();
+          break;
+        case "upcoming":
+          await upcomingTask();
+          break;
+        default:
+          await allTask();
+          break;
+      }
+      setTasks((prev) => prev.filter((tasks) => tasks.status === "InComplete"));
+    } catch (error) {
+      return alert("削除に失敗しました。");
+    }
+  };
+  //完了をすべて削除するボタン管理
+  const completedTaskCount = tasks.filter(
+    (task) => task.status === "Complete"
+  ).length;
+  const comleted = completedTaskCount > 0;
 
   return (
     <div className="flex flex-col min-h-screen bg-blue-50 dark:bg-blue-900">
@@ -408,43 +454,54 @@ export default function page() {
                 value={filter}
                 onValueChange={(value) => setFilter(value as FilterTab)}
               >
-                <TabsList className="flex space-x-2 bg-gray-100 rounded-lg p-2">
-                  <TabsTrigger
-                    value="all"
-                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black mr-0 cursor-pointer"
-                    onClick={allTask}
-                  >
-                    すべて
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="active"
-                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black mr-0 cursor-pointer"
-                    onClick={activeTask}
-                  >
-                    未完了
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="completed"
-                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black  mr-0 cursor-pointer"
-                    onClick={completeTask}
-                  >
-                    完了
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="overdue"
-                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black mr-0 cursor-pointer"
-                    onClick={overdueTask}
-                  >
-                    期限切れ
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="upcoming"
-                    className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black  mr-0 cursor-pointer"
-                    onClick={upcomingTask}
-                  >
-                    近日締め切り
-                  </TabsTrigger>
-                </TabsList>
+                <div className="flex justify-between">
+                  <TabsList className="flex space-x-2 bg-gray-100 rounded-lg p-2">
+                    <TabsTrigger
+                      value="all"
+                      className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black mr-0 cursor-pointer"
+                      onClick={allTask}
+                    >
+                      すべて
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="active"
+                      className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black mr-0 cursor-pointer"
+                      onClick={activeTask}
+                    >
+                      未完了
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="completed"
+                      className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black  mr-0 cursor-pointer"
+                      onClick={completeTask}
+                    >
+                      完了
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="overdue"
+                      className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black mr-0 cursor-pointer"
+                      onClick={overdueTask}
+                    >
+                      期限切れ
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="upcoming"
+                      className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black  mr-0 cursor-pointer"
+                      onClick={upcomingTask}
+                    >
+                      近日締め切り
+                    </TabsTrigger>
+                  </TabsList>
+                  {comleted && (
+                    <Button
+                      type="button"
+                      className="bg-red-400 hover:bg-red-500"
+                      onClick={handleDeleteCompleted}
+                    >
+                      完了を全て削除
+                    </Button>
+                  )}
+                </div>
                 {/* タブごとの中身（例） */}
                 <div className="mt-4">
                   <TabsContent value={filter}>
