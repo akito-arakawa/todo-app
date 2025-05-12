@@ -76,6 +76,12 @@ public class TaskController {
         }
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<?> findByUserName(@AuthenticationPrincipal UserDetails userDetails) {
+            String loginId = userDetails.getUsername();
+            return ResponseEntity.ok(loginId);
+    }
+
     //追加処理
     @PostMapping
     public ResponseEntity<?> saveTasks(@RequestBody TaskRequest request, @AuthenticationPrincipal UserDetails userDetails) {

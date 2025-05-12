@@ -10,8 +10,7 @@ import Logout from "@/components/icon/logout";
 import { useState } from "react";
 import { TaskRequest, Task, FilterTab } from "@/types";
 import TaskItem from "@/components/todo/task-item";
-import { resolve } from "path";
-import { headers } from "next/headers";
+import { useRouter } from "next/navigation";
 
 export default function page() {
   //タスク追加ステート
@@ -24,6 +23,10 @@ export default function page() {
   const [filter, setFilter] = useState<FilterTab>("all");
   //タスク編集ステート
   const [complete, setComplete] = useState(false);
+  //ユーザ名
+  const [userName, setUserName] = useState<string>("");
+
+    const router = useRouter();
 
   //初期の描画のためのデータを取得する
   useEffect(() => {
@@ -51,6 +54,24 @@ export default function page() {
         console.log(data);
       } catch {
         throw new Error("表示に失敗しました。");
+      }
+      try {
+        const response = await fetch("http://localhost:8080/api/tasks/user", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response) {
+          throw new Error("usernmaeの取得に失敗しました");
+        }
+
+        const data = await response.text();
+        setUserName(data);
+      } catch (error) {
+        console.error("エラー:", error);
       }
     };
 
@@ -402,6 +423,11 @@ export default function page() {
   ).length;
   const comleted = completedTaskCount > 0;
 
+const handleLogout = () => {
+   localStorage.removeItem("token");
+   router.push("/auth/login")
+}
+
   return (
     <div className="flex flex-col min-h-screen bg-blue-50 dark:bg-blue-900">
       <header className="bg-blue-600 dark:bg-blue-900 text-white shadow-md">
@@ -409,14 +435,15 @@ export default function page() {
           <div className="flex items-center space-x-2">
             <h1 className="text-xl md:text-2xl font-bold">Todoアプリ</h1>
             <p className="text-sm text-blue-100 hidden md:block">
-              こんにちはloginId
+              {`こんにちは${userName}さん`}
             </p>
           </div>
           <div className="flex items-center space-x-1">
-            <Logout />
-            <button className="inline-flex items-center justify-center text-sm font-medium h-10 px-4 py-3">
+            <Button className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-sm font-medium h-10 px-4 py-3"
+                    onClick={handleLogout}>
+              <Logout />
               ログアウト
-            </button>
+            </Button>
           </div>
         </div>
       </header>
