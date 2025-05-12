@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,16 +14,16 @@ import java.util.UUID;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, UUID> {
     //uerIdを基に全てのTaskを取得
-    List<Task> findAllByUserId(UUID userId);
+    List<Task> findAllByUserIdOrderByCreatedAtAsc(UUID userId);
 
     //一つのタスクを取得
     Optional<Task> findByUserIdAndId(UUID userId, UUID id);
 
     //未完了・完了を取得
-    List<Task> findByStatusAndUser_Id(Status status, UUID userId);
+    List<Task> findByStatusAndUser_IdOrderByCreatedAtAsc(Status status, UUID userId);
 
     //期限切れ(期限の記載のないものは表示しない)
-    List<Task> findAllByUserIdAndDueDateIsNotNullAndDueDateBefore(UUID userId, Timestamp now);
+    List<Task> findAllByUserIdAndDueDateIsNotNullAndDueDateBeforeOrderByDueDateAsc(UUID userId, Timestamp now);
 
     //近日締め切り(期限の記載のないものは表示しない)
     List<Task> findByUser_IdAndDueDateIsNotNullAndDueDateBetweenOrderByDueDate(

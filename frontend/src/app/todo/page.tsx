@@ -90,11 +90,26 @@ export default function page() {
         const data = await response.json();
         console.log("追加されたタスク:", data);
 
-        setTasks((prevTasks) => [...prevTasks, data]);
-
         setTitle("");
         setDueDate("");
         setShowDueDate(false);
+        switch (filter) {
+          case "active":
+            await activeTask();
+            break;
+          case "completed":
+            await completeTask();
+            break;
+          case "overdue":
+            await overdueTask();
+            break;
+          case "upcoming":
+            await upcomingTask();
+            break;
+          default:
+            await allTask();
+            break;
+        }
       } else {
         console.log("タスクが空です");
         return;

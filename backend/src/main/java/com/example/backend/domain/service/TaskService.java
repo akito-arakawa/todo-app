@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,7 +31,7 @@ public class TaskService {
         Optional<User> user = userRepository.findByLoginId(loginId);
         if (user.isPresent()) {
             UUID userId = user.get().getId();
-            return taskRepository.findAllByUserId(userId);
+            return taskRepository.findAllByUserIdOrderByCreatedAtAsc(userId);
         } else {
             throw new RuntimeException("問題が発生しました");
         }
@@ -45,7 +47,7 @@ public class TaskService {
         Optional<User> user = userRepository.findByLoginId(loginId);
         if (user.isPresent()) {
             UUID userId = user.get().getId();
-            return taskRepository.findByStatusAndUser_Id(status, userId);
+            return taskRepository.findByStatusAndUser_IdOrderByCreatedAtAsc(status, userId);
         } else {
             throw new RuntimeException("問題が発生しました");
         }
@@ -56,9 +58,10 @@ public class TaskService {
         Optional<User> user = userRepository.findByLoginId(loginId);
         if (user.isPresent()) {
             UUID userId = user.get().getId();
-            //現在の時間を取得
-            Timestamp now = Timestamp.from(Instant.now());
-            return taskRepository.findAllByUserIdAndDueDateIsNotNullAndDueDateBefore(userId, now);
+            //今日の日付の0:00を取得
+            LocalDate today = LocalDate.now();
+            Timestamp todayStart = Timestamp.valueOf(today.atStartOfDay());
+            return taskRepository.findAllByUserIdAndDueDateIsNotNullAndDueDateBeforeOrderByDueDateAsc(userId, todayStart);
         } else {
             throw new RuntimeException("問題が発生しました");
         }
@@ -69,13 +72,14 @@ public class TaskService {
         Optional<User> user = userRepository.findByLoginId(loginId);
         if (user.isPresent()) {
             UUID userId = user.get().getId();
-            //現在の時間を取得
-            Timestamp now = Timestamp.from(Instant.now());
+            //今日の日付の0:00を取得
+            LocalDate today = LocalDate.now();
+            Timestamp todayStart = Timestamp.valueOf(today.atStartOfDay());
             //現在の時間から7日後を取得
             Timestamp sevenDaysLater = Timestamp.from(Instant.now().plusSeconds(7 * 24 * 60 * 60));
             return taskRepository.findByUser_IdAndDueDateIsNotNullAndDueDateBetweenOrderByDueDate(
                     userId,
-                    now,
+                    todayStart,
                     sevenDaysLater
             );
         } else {
