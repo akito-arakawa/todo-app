@@ -13,3 +13,5 @@ databaseChangeLog:
       file: db/changeLog/V1.5__insert_sample_tasks.yaml
   - include:
       file: db/changeLog/V1.6__insert_sample_tasks.yaml
+  - include:
+      file: db/changeLog/V1.7__refresh_tokens.yaml
