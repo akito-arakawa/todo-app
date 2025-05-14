@@ -11,8 +11,15 @@ import { useState } from "react";
 import { TaskRequest, Task, FilterTab } from "@/types";
 import TaskItem from "@/components/todo/task-item";
 import { useRouter } from "next/navigation";
+import { useApiFetch } from "@/hooks/useApiFetch";
+import TaskForm from "@/components/todo/TaskForm";
+import TaskListTab from "@/components/todo/TaskListTab";
+import TaskHeader from "@/components/todo/TaskHeader";
 
 export default function page() {
+  //カスタムフック関数を呼び出し
+  const { apiFetch } = useApiFetch();
+
   //タスク追加ステート
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -23,26 +30,22 @@ export default function page() {
   const [filter, setFilter] = useState<FilterTab>("all");
   //タスク編集ステート
   const [complete, setComplete] = useState(false);
-  //ユーザ名
+  //ユーザ名ステート
   const [userName, setUserName] = useState<string>("");
-
-    const router = useRouter();
+  //ルーティング設定
+  const router = useRouter();
 
   //初期の描画のためのデータを取得する
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     if (!token) {
       alert("トークンがありません");
       return;
     }
     const fetchTask = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/tasks", {
+        const response = await apiFetch("http://localhost:8080/api/tasks", {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
         });
 
         if (!response) {
@@ -56,13 +59,12 @@ export default function page() {
         throw new Error("表示に失敗しました。");
       }
       try {
-        const response = await fetch("http://localhost:8080/api/tasks/user", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await apiFetch(
+          "http://localhost:8080/api/tasks/user",
+          {
+            method: "GET",
+          }
+        );
 
         if (!response) {
           throw new Error("usernmaeの取得に失敗しました");
@@ -77,12 +79,11 @@ export default function page() {
 
     fetchTask();
   }, []);
-
   //タスク追加処理
   const createTask = async (e: React.FormEvent) => {
     //画面の更新を防ぐ
     e.preventDefault();
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     console.log(token);
     if (!token) {
       alert("トークンがありません");
@@ -96,12 +97,8 @@ export default function page() {
           dueDate: dueDate || null,
         };
 
-        const response = await fetch("http://localhost:8080/api/tasks", {
+        const response = await apiFetch("http://localhost:8080/api/tasks", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
           body: JSON.stringify(taskRequest),
         });
 
@@ -146,20 +143,17 @@ export default function page() {
   const allTask = async (e?: React.FormEvent) => {
     //画面の更新を防ぐ
     e?.preventDefault();
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     console.log(token);
     if (!token) {
       alert("トークンがありません");
       return;
     }
     try {
-      const response = await fetch("http://localhost:8080/api/tasks", {
+      const response = await apiFetch("http://localhost:8080/api/tasks", {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
       });
+
       if (!response) {
         throw new Error("タスク取得に失敗しました。");
       }
@@ -175,23 +169,20 @@ export default function page() {
   const activeTask = async (e?: React.FormEvent) => {
     //画面の更新を防ぐ
     e?.preventDefault();
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     console.log(token);
     if (!token) {
       alert("トークンがありません");
       return;
     }
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         "http://localhost:8080/api/tasks/inComplete",
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
         }
       );
+
       if (!response) {
         throw new Error("タスク取得に失敗しました。");
       }
@@ -208,20 +199,20 @@ export default function page() {
   const completeTask = async (e?: React.FormEvent) => {
     //画面の更新を防ぐ
     e?.preventDefault();
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     console.log(token);
     if (!token) {
       alert("トークンがありません");
       return;
     }
     try {
-      const response = await fetch("http://localhost:8080/api/tasks/complete", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiFetch(
+        "http://localhost:8080/api/tasks/complete",
+        {
+          method: "GET",
+        }
+      );
+
       if (!response) {
         throw new Error("タスク取得に失敗しました。");
       }
@@ -238,20 +229,20 @@ export default function page() {
   const overdueTask = async (e?: React.FormEvent) => {
     //画面の更新を防ぐ
     e?.preventDefault();
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     console.log(token);
     if (!token) {
       alert("トークンがありません");
       return;
     }
     try {
-      const response = await fetch("http://localhost:8080/api/tasks/expired", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiFetch(
+        "http://localhost:8080/api/tasks/expired",
+        {
+          method: "GET",
+        }
+      );
+
       if (!response) {
         throw new Error("タスク取得に失敗しました。");
       }
@@ -268,20 +259,20 @@ export default function page() {
   const upcomingTask = async (e?: React.FormEvent) => {
     //画面の更新を防ぐ
     e?.preventDefault();
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
     console.log(token);
     if (!token) {
       alert("トークンがありません");
       return;
     }
     try {
-      const response = await fetch("http://localhost:8080/api/tasks/dueSoon", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiFetch(
+        "http://localhost:8080/api/tasks/dueSoon",
+        {
+          method: "GET",
+        }
+      );
+
       if (!response) {
         throw new Error("タスク取得に失敗しました。");
       }
@@ -297,22 +288,19 @@ export default function page() {
   //削除機能
   const handleDelete = async (taskId: string) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("accessToken");
       console.log(token);
       if (!token) {
         alert("トークンがありません");
         return;
       }
-      const response = await fetch(
+      const response = await apiFetch(
         `http://localhost:8080/api/tasks/${taskId}`,
         {
           method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
         }
       );
+
       if (!response) {
         throw new Error("削除に失敗しました。");
       }
@@ -325,20 +313,16 @@ export default function page() {
   //タスク編集処理
   const handleUpdate = async (updateTask: Task) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("accessToken");
       console.log(token);
       if (!token) {
         alert("トークンがありません");
         return;
       }
-      const response = await fetch(
+      const response = await apiFetch(
         `http://localhost:8080/api/tasks/update/${updateTask.id}`,
         {
-          method: "Put",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          method: "PUT",
           body: JSON.stringify({
             title: updateTask.title,
             status: updateTask.status,
@@ -379,19 +363,19 @@ export default function page() {
   //完了をすべて削除
   const handleDeleteCompleted = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("accessToken");
       console.log(token);
       if (!token) {
         alert("トークンがありません");
         return;
       }
-      const response = await fetch("http://localhost:8080/api/tasks/complete", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiFetch(
+        "http://localhost:8080/api/tasks/complete",
+        {
+          method: "DELETE",
+        }
+      );
+
       if (!response) {
         throw new Error("削除に失敗しました");
       }
@@ -423,73 +407,31 @@ export default function page() {
   ).length;
   const comleted = completedTaskCount > 0;
 
-const handleLogout = () => {
-   localStorage.removeItem("token");
-   router.push("/auth/login")
-}
+  //ログアウト
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    router.push("/auth/login");
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-blue-50 dark:bg-blue-900">
-      <header className="bg-blue-600 dark:bg-blue-900 text-white shadow-md">
-        <div className="container mx-auto flex justify-between items-center px-4 py-4">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-xl md:text-2xl font-bold">Todoアプリ</h1>
-            <p className="text-sm text-blue-100 hidden md:block">
-              {`こんにちは${userName}さん`}
-            </p>
-          </div>
-          <div className="flex items-center space-x-1">
-            <Button className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-sm font-medium h-10 px-4 py-3"
-                    onClick={handleLogout}>
-              <Logout />
-              ログアウト
-            </Button>
-          </div>
-        </div>
-      </header>
+      <TaskHeader userName={userName} handleLogout={handleLogout}/>
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="flex flex-col items-center">
           <h1 className="text-2xl md:text-3xl font-bold mb-8 text-center">
             タスク管理
           </h1>
           <div className="w-full max-w-3xl space-y-6">
-            <Card>
-              <CardContent>
-                <form onSubmit={createTask} className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="text"
-                      className="flex h-10 w-full rounded-md whitespace-nowrap bg-white px-3 py-2 text-sm"
-                      placeholder="新しいタスクを入力"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                    ></Input>
-                    <Button
-                      className=" text-black inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-semibold bg-white border border-input hover:bg-accent hover:text-accent-foreground h-10 w-10 shrink-0"
-                      onClick={() => setShowDueDate(!showDueDate)}
-                      type="button"
-                    >
-                      <Plus />
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="secondary"
-                      className="bg-gray-400 hover:bg-gray-500 text-white rounded-md h-10 w-15"
-                    >
-                      追加
-                    </Button>
-                  </div>
-                  {showDueDate && (
-                    <Input
-                      type="date"
-                      value={dueDate}
-                      onChange={(e) => setDueDate(e.target.value)}
-                      className="w-full"
-                    />
-                  )}
-                </form>
-              </CardContent>
-            </Card>
+            <TaskForm
+              title={title}
+              createTask={createTask}
+              setTitle={setTitle}
+              setShowDueDate={setShowDueDate}
+              showDueDate={showDueDate}
+              dueDate={dueDate}
+              setDueDate={setDueDate}
+            />
             <div className="w-full max-w-3xl space-y-6">
               <Tabs
                 className="w-full"
@@ -497,43 +439,13 @@ const handleLogout = () => {
                 onValueChange={(value) => setFilter(value as FilterTab)}
               >
                 <div className="flex justify-between">
-                  <TabsList className="flex space-x-2 bg-gray-100 rounded-lg p-2">
-                    <TabsTrigger
-                      value="all"
-                      className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black mr-0 cursor-pointer"
-                      onClick={allTask}
-                    >
-                      すべて
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="active"
-                      className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black mr-0 cursor-pointer"
-                      onClick={activeTask}
-                    >
-                      未完了
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="completed"
-                      className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black  mr-0 cursor-pointer"
-                      onClick={completeTask}
-                    >
-                      完了
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="overdue"
-                      className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black mr-0 cursor-pointer"
-                      onClick={overdueTask}
-                    >
-                      期限切れ
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="upcoming"
-                      className="text-base font-mono text-gray-500 h-8 data-[state=active]:text-black  mr-0 cursor-pointer"
-                      onClick={upcomingTask}
-                    >
-                      近日締め切り
-                    </TabsTrigger>
-                  </TabsList>
+                  <TaskListTab
+                    allTask={allTask}
+                    activeTask={activeTask}
+                    completeTask={completeTask}
+                    overdueTask={overdueTask}
+                    upcomingTask={upcomingTask}
+                  />
                   {comleted && (
                     <Button
                       type="button"

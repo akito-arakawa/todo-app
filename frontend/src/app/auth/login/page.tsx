@@ -61,9 +61,11 @@ export default function login() {
         return;
       } else {
         const result = await response.json();
-        const token = result.token; // トークンを取得
-        localStorage.setItem("token", token); // トークンをローカルストレージに保存
-        console.log("トークン", token);
+        const access_token = result.accessToken; // アクセストークンを取得
+        const refresh_token = result.refreshToken; // リフレッシュトークンを取得
+        localStorage.setItem("accessToken", access_token); // アクセストークンをローカルストレージに保存
+        localStorage.setItem("refreshToken", refresh_token); // リフレッシュトークンをローカルストレージに保存
+        
       }
       // ログイン成功時の処理
       router.push("/todo"); // ログイン成功後に遷移するページ
