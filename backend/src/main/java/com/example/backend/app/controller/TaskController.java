@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public class TaskController {
             List<Task> tasks = taskService.findAllByTask(loginId);
                 return ResponseEntity.ok(tasks);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage()); //エラー内容表示
+            return ResponseEntity.status(404).build();
         }
     }
     //完了表示
@@ -39,7 +40,7 @@ public class TaskController {
             List<Task> tasks = taskService.findByStatusTask(Status.Complete, loginId);
             return ResponseEntity.ok(tasks);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
+            return ResponseEntity.status(404).build();
         }
     }
     //未完了表示
@@ -50,7 +51,7 @@ public class TaskController {
             List<Task> tasks = taskService.findByStatusTask(Status.InComplete, loginId);
             return ResponseEntity.ok(tasks);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
+            return ResponseEntity.status(404).build();
         }
     }
     //期限切れ表示
@@ -61,7 +62,7 @@ public class TaskController {
             List<Task> tasks = taskService.findByDueDateBeforeTask(loginId);
             return ResponseEntity.ok(tasks);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
+            return ResponseEntity.status(404).build();
         }
     }
     //近日締め切り表示
@@ -72,14 +73,15 @@ public class TaskController {
             List<Task> tasks = taskService.findTasksDueSoon(loginId);
             return ResponseEntity.ok(tasks);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
+            return ResponseEntity.status(404).build();
         }
     }
 
     @GetMapping("/user")
     public ResponseEntity<?> findByUserName(@AuthenticationPrincipal UserDetails userDetails) {
             String loginId = userDetails.getUsername();
-            return ResponseEntity.ok(loginId);
+            System.out.println(loginId);
+            return ResponseEntity.ok(Map.of("loginId", loginId));
     }
 
     //追加処理
@@ -90,7 +92,7 @@ public class TaskController {
             Task savedTask = taskService.addTask(request, loginId);
             return ResponseEntity.ok(savedTask);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage()); //エラー内容表示
+            return ResponseEntity.status(404).build();
         }
     }
 
@@ -120,7 +122,7 @@ public class TaskController {
             Task exitingTask = taskService.updateTask(loginId, taskId, request);
             return ResponseEntity.ok(exitingTask);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
+            return ResponseEntity.status(404).build();
         }
     }
 }

@@ -55,11 +55,6 @@ public class SecurityConfig{
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // パスワードの暗号化用
     }
-     //検証用
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
-//    }
 
     @Bean
     public AuthenticationManager authenticationManager(
