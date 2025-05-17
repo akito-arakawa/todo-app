@@ -1,16 +1,23 @@
-import React from "react";
+"use client";
+
+import React, { useContext } from "react";
 import { Button } from "@/components/ui/button";
 import Logout from "@/components/icon/logout";
+import { useRouter } from "next/navigation";
+import { useTaskContext } from "@/context/TaskContext";
 
-interface TaskHeaderPorps {
-  userName: string;
-  handleLogout: () => void;
-}
+export default function TaskHeader() {
+  //ルーティング設定
+  const router = useRouter();
 
-export default function TaskHeader({
-  userName,
-  handleLogout,
-}: TaskHeaderPorps) {
+  const { userName } = useTaskContext();
+
+  //ログアウト
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    router.push("/auth/login");
+  };
   return (
     <header className="bg-blue-600 dark:bg-blue-900 text-white shadow-md">
       <div className="container mx-auto flex justify-between items-center px-4 py-4">

@@ -1,25 +1,40 @@
+"use client" 
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Plus from "@/components/icon/plus";
+import { useState } from "react";
+import { TaskRequest } from "@/types";
+import { useTaskContext } from "@/context/TaskContext";
 
+export default function TaskForm() {
+  const [title, setTitle] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [showDueDate, setShowDueDate] = useState(false);
 
-interface TaskFormProps {
-  title: string;
-  createTask: (e: React.FormEvent) => void;
-  setTitle: (value: string) => void;
-  setShowDueDate: (value: boolean) => void;
-  showDueDate: boolean;
-  dueDate: string;
-  setDueDate: (value: string) => void;
-}
+  const { createTask } = useTaskContext();
 
-export default function TaskForm({title, createTask,setTitle,setShowDueDate,showDueDate,dueDate,setDueDate}:TaskFormProps) {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!title) return;
+
+    const taskRequest: TaskRequest = {
+      title,
+      dueDate: dueDate || null,
+    };
+
+    await createTask(taskRequest);
+    setTitle("");
+    setDueDate("");
+    setShowDueDate(false);
+  };
   return (
     <Card>
       <CardContent>
-        <form onSubmit={createTask} className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div className="flex items-center gap-2">
             <Input
               type="text"
