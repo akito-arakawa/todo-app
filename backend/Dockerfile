@@ -1,14 +1,17 @@
-# Java 17 の JDK イメージを使用
+# Java 17 の JDK を使用
 FROM eclipse-temurin:17-jdk
 
-# 作業ディレクトリ作成
+# 作業ディレクトリを設定
 WORKDIR /app
 
-# Gradle Wrapperやソースコードをコピー
+# Gradle Wrapper とソースコードをコピー
 COPY . .
 
-# JARファイルをビルド
+# Gradle Wrapperに実行権限を付与
+RUN chmod +x ./gradlew
+
+# JARファイルをビルド（初回に時間がかかります）
 RUN ./gradlew bootJar
 
-# jarを実行
+# アプリケーションの実行（生成された JAR を使用）
 CMD ["java", "-jar", "build/libs/app.jar"]
