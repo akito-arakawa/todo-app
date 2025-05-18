@@ -1,9 +1,11 @@
 package com.example.backend.domain.service;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +14,11 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-    //秘密鍵（仮ローカル用）
-    private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+
+
+    private static final Dotenv dotenv = Dotenv.load();
+    private static final String SECRET = dotenv.get("JWT_SECRET");
+    private static final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
 
     // アクセストークン有効期限：1時間（ミリ秒）
     private static final long ACCESS_TIME =  60 * 60 * 24;
