@@ -1,14 +1,14 @@
-# Java 17 の JDK イメージをベースにする
+# Java 17 の JDK イメージを使用
 FROM eclipse-temurin:17-jdk
 
-# 作業ディレクトリ
+# 作業ディレクトリ作成
 WORKDIR /app
 
-# ビルド済みの jar ファイルをコピー
-COPY build/libs/*.jar app.jar
+# Gradle Wrapperやソースコードをコピー
+COPY . .
 
-# アプリが使うポート（Spring Boot は 8080 がデフォルト）
-EXPOSE 8080
+# JARファイルをビルド
+RUN ./gradlew bootJar
 
-# アプリを起動するコマンド
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# jarを実行
+CMD ["java", "-jar", "build/libs/app.jar"]
