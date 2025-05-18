@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: V1.4__set_default_for_updated_at
+      author: aki
+      changes:
+        - addDefaultValue:
+            tableName: users
+            columnName: updated_at
+            defaultValueComputed: "CURRENT_TIMESTAMP"
+        - addDefaultValue:
+            tableName: tasks
+            columnName: updated_at
+            defaultValueComputed: "CURRENT_TIMESTAMP"
