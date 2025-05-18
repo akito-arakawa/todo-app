@@ -1,5 +1,14 @@
 databaseChangeLog:
   - changeSet:
+      id: enable-uuid-ossp_1.7
+      author: aki
+      changes:
+        - sql:
+            dbms: postgresql
+            splitStatements: false
+            stripComments: true
+            sql: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+  - changeSet:
       id: V1.7__refresh_tokens
       author: aki
       preConditions:

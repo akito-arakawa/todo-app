@@ -1,5 +1,14 @@
 databaseChangeLog:
   - changeSet:
+      id: enable-uuid-ossp_1.2
+      author: aki
+      changes:
+        - sql:
+            dbms: postgresql
+            splitStatements: false
+            stripComments: true
+            sql: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+  - changeSet:
       id: V1.2__insert_sample_users
       author: aki
       preConditions:
@@ -19,4 +28,3 @@ databaseChangeLog:
               - column:
                   name: password
                   value: password
-                  
