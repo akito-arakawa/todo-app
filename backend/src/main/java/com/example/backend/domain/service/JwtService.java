@@ -16,9 +16,11 @@ import java.util.Date;
 public class JwtService {
 
 
-    private static final Dotenv dotenv = Dotenv.load();
-    private static final String SECRET = dotenv.get("JWT_SECRET");
-    private static final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private final Key SECRET_KEY;
+
+    public JwtService(@Value("${JWT_SECRET}") String secret) {
+        this.SECRET_KEY = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     // アクセストークン有効期限：1時間（ミリ秒）
     private static final long ACCESS_TIME =  60 * 60 * 24;
