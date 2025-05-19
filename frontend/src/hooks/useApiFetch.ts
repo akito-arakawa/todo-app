@@ -1,3 +1,5 @@
+"use client";
+
 const apiFetch = async (url: string, options: RequestInit = {}) => {
   //トークンを取得
   const accessToken = localStorage.getItem("accessToken");
