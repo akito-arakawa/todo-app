@@ -40,7 +40,7 @@ export default function register() {
   const onSubmit = async (data: RegisterFormData) => {
     //APIにデータを送信
     try {
-      const response = await fetch("http://localhost:8080/api/auth/add", {
+      const response = await fetch("https://spring-backend-czdm.onrender.com/api/auth/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +68,7 @@ export default function register() {
       }
 
       alert("登録完了が完了しました。");
-      router.push("/auth/login"); // 登録完了後にログインページにリダイレクト
+      router.push("https://spring-backend-czdm.onrender.com/auth/login"); // 登録完了後にログインページにリダイレクト
     } catch (error) {
       console.error("登録エラー:", error);
       alert("登録に失敗しました。");
