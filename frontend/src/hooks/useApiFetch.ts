@@ -7,11 +7,10 @@ const apiFetch = async (url: string, options: RequestInit = {}) => {
   //トークン切れflag
   let tokenExpired = false;
   //BASE_URL
-  const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL;
+  const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  console.log("NODE_ENV", process.env.NODE_ENV);
   console.log("NEXT_PUBLIC_API_BASE_URL", process.env.NEXT_PUBLIC_API_BASE_URL);
-  console.log(url);
-  console.log("BASE_URL", BASE_URL);
+
   const fullUrl = `${BASE_URL}${url}`;
   //headerとbodyを作成
   const authOptions: RequestInit = {
@@ -27,14 +26,11 @@ const apiFetch = async (url: string, options: RequestInit = {}) => {
 
   //アクセストークンが無効でリフレッシュを行う
   if (response.status === 403 || (response.status === 401 && refreshToken)) {
-    const RefreshResoponse = await fetch(
-      `${BASE_URL}/api/auth/refresh`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),
-      }
-    );
+    const RefreshResoponse = await fetch(`${BASE_URL}/api/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
+    });
     //リトライ再度リクエスト
     if (RefreshResoponse.ok) {
       const data = await RefreshResoponse.json();
