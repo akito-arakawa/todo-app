@@ -68,7 +68,7 @@ export default function login() {
         
       }
       // ログイン成功時の処理
-      router.push("https://spring-backend-czdm.onrender.com/todo"); // ログイン成功後に遷移するページ
+      router.push("/todo"); // ログイン成功後に遷移するページ
     } catch (error) {
       console.error("Error:", error);
       // エラーハンドリング

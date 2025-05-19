@@ -68,7 +68,7 @@ export default function register() {
       }
 
       alert("登録完了が完了しました。");
-      router.push("https://spring-backend-czdm.onrender.com/auth/login"); // 登録完了後にログインページにリダイレクト
+      router.push("/auth/login"); // 登録完了後にログインページにリダイレクト
     } catch (error) {
       console.error("登録エラー:", error);
       alert("登録に失敗しました。");
