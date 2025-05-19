@@ -14,8 +14,6 @@ COPY . .
 # アプリをビルド（Next.js standalone 構成）
 RUN npm run build
 
----
-
 # Step 2: Run Stage
 FROM node:18-alpine AS runner
 
@@ -25,6 +23,9 @@ WORKDIR /app
 # standalone build 出力をコピー
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+
+# publicフォルダ（favicon.ico など）をコピー
+COPY --from=builder /app/public ./public
 
 # ポートを公開（Render用）
 EXPOSE 3000
