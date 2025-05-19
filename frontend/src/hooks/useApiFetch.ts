@@ -1,5 +1,3 @@
-"use client";
-
 const apiFetch = async (url: string, options: RequestInit = {}) => {
   //トークンを取得
   const accessToken = localStorage.getItem("accessToken");
@@ -7,10 +5,8 @@ const apiFetch = async (url: string, options: RequestInit = {}) => {
   //トークン切れflag
   let tokenExpired = false;
   //BASE_URL
-  const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-  console.log("NODE_ENV", process.env.NODE_ENV);
-  console.log("NEXT_PUBLIC_API_BASE_URL", process.env.NEXT_PUBLIC_API_BASE_URL);
-
+  const BASE_URL = process.env.API_BASE_URL;
+  
   const fullUrl = `${BASE_URL}${url}`;
   //headerとbodyを作成
   const authOptions: RequestInit = {
