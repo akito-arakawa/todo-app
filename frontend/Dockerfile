@@ -24,9 +24,6 @@ WORKDIR /app
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# publicフォルダ（favicon.ico など）をコピー
-COPY --from=builder /app/public ./public
-
 # ポートを公開（Render用）
 EXPOSE 3000
 
