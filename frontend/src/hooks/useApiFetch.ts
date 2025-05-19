@@ -7,7 +7,7 @@ const apiFetch = async (url: string, options: RequestInit = {}) => {
   //BASE_URL
   const BASE_URL =
     process.env.NEXT_PUBLIC_API_BASE_URL;
-
+  console.log("BASE_URL", BASE_URL);
   const fullUrl = `${BASE_URL}${url}`;
   //headerとbodyを作成
   const authOptions: RequestInit = {
