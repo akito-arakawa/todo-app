@@ -1,31 +1,28 @@
-# Step 1: Build Stage
+# Step 1: Build stage
 FROM node:18-alpine AS builder
 
-# 作業ディレクトリを作成
 WORKDIR /app
 
-# package.jsonとlockファイルをコピーして依存解決
+# Install dependencies
 COPY package*.json ./
 RUN npm install
 
-# アプリの全ファイルをコピー
+# Copy all source files
 COPY . .
 
-# アプリをビルド（Next.js standalone 構成）
+# Build Next.js app
 RUN npm run build
 
-# Step 2: Run Stage
+# Step 2: Production stage
 FROM node:18-alpine AS runner
 
-# 作業ディレクトリを指定
 WORKDIR /app
 
-# standalone build 出力をコピー
+# Copy standalone build output
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# ポートを公開（Render用）
 EXPOSE 3000
 
-# アプリ起動コマンド
-CMD ["npm", "start"]
+# Start the server
+CMD ["node", "server.js"]
