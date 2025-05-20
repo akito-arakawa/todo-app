@@ -65,7 +65,7 @@ public class SecurityConfig{
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://todo-frontend-hnxy.onrender.com")); // ReactのURL
+        configuration.setAllowedOrigins(List.of("https://todo-frontend-psi-gilt.vercel.app/")); // ReactのURL
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); // 認証情報を含める場合はtrue
