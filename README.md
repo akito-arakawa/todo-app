@@ -25,6 +25,10 @@
 - Vercel
 ## 🌐 本番環境のURL（Vercel）
 https://todo-frontend-psi-gilt.vercel.app/auth/login
+<br>
+※ バックエンドは Render（無料プラン）上にホスティングされています。
+<br>
+※ 無料プランの特性上、数分間アクセスがないとサーバーがスリープし、次のリクエスト時に時間がかかることがあります。
 ## ローカルでのセットアップ手順
 ### 1.`.env`ファイルの作成
 
