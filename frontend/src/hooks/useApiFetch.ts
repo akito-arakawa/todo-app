@@ -5,7 +5,7 @@ const apiFetch = async (url: string, options: RequestInit = {}) => {
   //トークン切れflag
   let tokenExpired = false;
   //BASE_URL
-  const BASE_URL = "https://spring-backend-czdm.onrender.com";
+  const BASE_URL = "https://my-spring-app.fly.dev";
   
   const fullUrl = `${BASE_URL}${url}`;
   //headerとbodyを作成
