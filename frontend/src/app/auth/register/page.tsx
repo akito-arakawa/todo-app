@@ -40,7 +40,7 @@ export default function register() {
   const onSubmit = async (data: RegisterFormData) => {
     //APIにデータを送信
     try {
-      const response = await fetch("https://spring-backend-czdm.onrender.com/api/auth/add", {
+      const response = await fetch("https://my-spring-app.fly.dev/api/auth/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
